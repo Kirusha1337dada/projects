@@ -1,0 +1,177 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.VisualBasic;
+using System.Numerics;
+
+public class MatrixDeterminantCalculator
+{
+    public static int CalculateDeterminantRecursive(int[,] matrix)
+    {
+        int size = matrix.GetLength(0);
+
+        if (size != matrix.GetLength(1))
+        {
+            throw new ArgumentException("Matrix must be square.");
+        }
+
+        if (size == 1)
+        {
+            return matrix[0, 0];
+        }
+
+        int determinant = 0;
+
+        for (int i = 0; i < size; i++)
+        {
+            int[,] subMatrix = CreateSubMatrix(matrix, 0, i);
+            determinant +=(int) Math.Pow(-1, i) * matrix[0, i] * CalculateDeterminantRecursive(subMatrix);
+        }
+
+        return determinant;
+    }
+
+    private static int[,] CreateSubMatrix(int[,] matrix, int excludeRow, int excludeCol)
+    {
+        
+        int size = matrix.GetLength(0);
+        int[,] subMatrix = new int[size - 1, size - 1];
+
+        int r = 0;
+
+        for (int i = 0; i < size; i++)
+        {
+            if (i == excludeRow)
+            {
+                continue;
+            }
+
+            int c = 0;
+
+            for (int j = 0; j < size; j++)
+            {
+                if (j == excludeCol)
+                {
+                    continue;
+                }
+
+                subMatrix[r, c] = matrix[i, j];
+                c++;
+            }
+
+            r++;
+        }
+
+        return subMatrix;
+    }
+}
+
+namespace test1
+{   
+    internal class Program
+    {
+        
+        static void Main()
+        {
+            int x = Int32.Parse(Interaction.InputBox("Введите x: ", "x window"));
+            int y = Int32.Parse(Interaction.InputBox("Введите y: ", "y window"));
+
+            int[,] matrix = new int[x, y];
+
+            
+            int count = 0, first_max = 0, second_max = 0;
+            
+            for (int i = 0; i < x; i++)
+            {
+                for (int j = 0; j < y; j++)
+                {
+                    Console.Write("matrix[" + i + "," + j + "]: ");
+                    matrix[i, j] = int.Parse(Console.ReadLine());
+                }
+            }
+            Console.WriteLine();
+
+            for (int i = 0; i < x; i++)
+            {
+                for (int j = 0; j < y; j++)
+                {
+                    if (matrix[i, j] % 2 == 0)
+                    {
+                        count += matrix[i, j];
+                    }
+
+                    if (matrix[i, j] > first_max)
+                    {
+                        second_max = first_max;
+                        first_max = matrix[i, j];
+                    }
+                    else if (matrix[i, j] > second_max && matrix[i, j] != first_max)
+                    {
+                        second_max = matrix[i, j];
+                    }
+
+
+
+                    Console.Write(matrix[i, j] + "\t");
+                }
+                Console.WriteLine();
+            }
+            Console.ReadKey();
+
+            int determinant = MatrixDeterminantCalculator.CalculateDeterminantRecursive(matrix);
+
+            MessageBox.Show("Сумма чётных элементов массива: " + count, "count window", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            Console.WriteLine(first_max);
+            Console.WriteLine(second_max);
+            MessageBox.Show("Сумма двух наибольших значений матрицы: " + (first_max + second_max), "sum window", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            MessageBox.Show("Вычисление определителя: " + determinant, "determinant window", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+        }
+    }
+}
+
+
+namespace test1
+{   
+    internal class Program
+    {
+        
+        static void Main()
+        {
+            string filename;
+
+            Console.Write("Введите имя файла: ");
+            filename = Console.ReadLine();
+
+            FileInfo file = new FileInfo(filename);
+
+            if(file.Exists)
+            {
+                //FileStream file1 = new FileStream(filename, FileMode.Open);
+                
+                StreamReader reader = new StreamReader(filename);
+               
+                Console.WriteLine("Введите слово, для ввода: ");
+                string text = Console.ReadLine();
+
+                string word = reader.ReadToEnd();
+                string[] words = word.Split(new char[] { '.', '!', '?',',',' ',':',';' },StringSplitOptions.RemoveEmptyEntries);
+
+                var matchQuery = from w in words
+                                 where w.Equals(text, StringComparison.InvariantCultureIgnoreCase)
+                                 select w;
+
+                int counter = matchQuery.Count();
+                Console.WriteLine(word);
+                Console.WriteLine($"{text} {counter} было найдено слов в файле {filename}");
+
+                reader.Close();               
+            }
+            else 
+            {
+                Console.WriteLine("Файл не найден!");
+            }
+        }

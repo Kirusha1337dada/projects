@@ -1,0 +1,154 @@
+	using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.VisualBasic;
+using System.Numerics;
+using System.IO;
+using System.Text.RegularExpressions;
+using static System.Net.WebRequestMethods;
+
+public class MatrixDeterminantCalculator
+{
+    public static int CalculateDeterminantRecursive(int[,] matrix)
+    {
+        int size = matrix.GetLength(0);
+
+        if (size != matrix.GetLength(1))
+        {
+            throw new ArgumentException("Matrix must be square.");
+        }
+
+        if (size == 1)
+        {
+            return matrix[0, 0];
+        }
+
+        int determinant = 0;
+
+        for (int i = 0; i < size; i++)
+        {
+            int[,] subMatrix = CreateSubMatrix(matrix, 0, i);
+            determinant +=(int) Math.Pow(-1, i) * matrix[0, i] * CalculateDeterminantRecursive(subMatrix);
+        }
+
+        return determinant;
+    }
+
+    private static int[,] CreateSubMatrix(int[,] matrix, int excludeRow, int excludeCol)
+    {
+        
+        int size = matrix.GetLength(0);
+        int[,] subMatrix = new int[size - 1, size - 1];
+
+        int r = 0;
+
+        for (int i = 0; i < size; i++)
+        {
+            if (i == excludeRow)
+            {
+                continue;
+            }
+
+            int c = 0;
+
+            for (int j = 0; j < size; j++)
+            {
+                if (j == excludeCol)
+                {
+                    continue;
+                }
+
+                subMatrix[r, c] = matrix[i, j];
+                c++;
+            }
+
+            r++;
+        }
+
+        return subMatrix;
+    }
+}
+
+namespace test1
+{
+    internal class Program
+    {
+
+        static void Main()
+        {
+            Console.OutputEncoding=Encoding.UTF8;
+
+            string filename;
+            Console.Write("Введите имя файла: ");
+            filename = Console.ReadLine();
+
+            FileInfo file = new FileInfo(filename);
+
+            if (file.Exists)
+            {
+                StreamReader reader = new StreamReader(filename);
+
+                string HTML = reader.ReadToEnd();
+		//.*?(\w.*)\s*
+                Console.WriteLine(HTML);
+                Match match = Regex.Match(HTML, @"<title>(.*?)</title>", RegexOptions.Singleline);
+                string result = match.Success ? match.Groups[1].Value : "Не найдено";
+                Console.WriteLine($"result = {result}");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.WriteLine("Не удалось открыть файл!");
+            }
+
+        }
+}
+}
+
+namespace test1
+{
+    internal class Program
+    {
+
+        static void Main()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+
+            Console.Write("Введите имя файла: ");
+            string filename;
+            filename = Console.ReadLine();
+
+            FileInfo file = new FileInfo(filename);
+
+            if (file.Exists)
+            {
+                StreamReader reader = new StreamReader(filename);
+                string text = reader.ReadToEnd();
+                
+                //Match match = Regex.Match(text, @"\b(\w+)\1\b", RegexOptions.Singleline);
+		MatchCollection match = Regex.Matches(text, @"\b(\w+)\1\b", RegexOptions.Singleline);
+                //string result = match.Success ? match.Groups[1].Value : "Не найдено!";
+		
+		if(match.Count > 0)
+		{
+			foreach(Match m in match)
+			{
+			Console.WriteLine(m.Groups[1].Value);
+			}
+		}	
+		
+                reader.Close();
+            }
+            else
+            {
+                Console.WriteLine("Файл не найден!");
+            }
+            
+        }
+    }
+}
+

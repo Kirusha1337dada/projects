@@ -1,0 +1,238 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.VisualBasic;
+using System.Numerics;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Net;
+using System.Xml.Linq;
+using System.Runtime.CompilerServices;
+using System.Collections;
+using System.Configuration;
+using System.Net.Http.Headers;
+
+class Company
+{
+    private string Ncompany;
+    private Rate secRate;
+    private Rate minRate;
+
+    public Rate SecRate
+    {
+        get { return secRate; }
+        set { secRate = value; }
+    }
+
+    public Rate MinRate
+    {
+        get { return minRate; }
+        set { minRate = value; }
+    }
+  
+    public string _Ncompany
+    {
+        get { return Ncompany; }
+        set { Ncompany = value; }
+    }
+
+    public Company(string company)
+    {
+        Ncompany = company;
+        
+    }
+
+    public void Print1()
+    {
+        Console.Write($"Название компании: {_Ncompany}");
+    }
+}
+
+class Client
+{
+    private string fio;
+    private string phone;
+    private double balance;
+
+    public string _fio
+    {
+        get { return fio; }
+        set { fio = value; }
+    }
+
+    public string _phone
+    {
+        get { return phone; }
+        set { phone = value; }
+    }
+
+    public double _balance
+    {
+        get { return balance; }
+        set { balance = value; }
+    }
+    
+    public Client(string fio_,string phone_,double balance_)
+    {
+        fio = fio_;
+        phone = phone_;
+        balance = balance_;
+    }
+
+    public void Print2()
+    {
+        Console.WriteLine($"ФИО: {_fio}");
+        Console.WriteLine($"Номер телефона: {_phone}");
+        Console.WriteLine($"Баланс счёта: {_balance}");
+    }
+}
+
+abstract class Rate
+{
+    ArrayList clients;
+    private string name_rate;
+    
+    public string _name
+    {
+        get { return name_rate; }
+        set { name_rate = value;}
+    }
+
+    public Rate(string Name)
+    {
+        name_rate = Name;
+    }
+
+    public Rate()
+    {
+        clients = new ArrayList();
+    }
+
+    public void AddClient(Client c)
+    {
+        clients.Add(c);
+    }
+    public abstract int count(int count_sec);
+
+}
+
+class SecRate : Rate
+{
+   
+    public override int count(int count_sec)
+    {
+        return second * _second;
+    }
+
+    private int second;
+
+    public int _second
+    {
+        get { return second; }
+        set { second = value; }
+    }
+    
+    public SecRate(int second_)
+    {
+        second = second_;
+    }
+
+    public int count_sec(int seconds)
+    {
+        return seconds * _second;
+    }
+
+    public double count_sec(double seconds)
+    {
+        return seconds * _second;
+    }
+        
+}
+
+class MinRate : Rate
+{
+    public override int count(int count_sec)
+    {
+        int minutes = count_sec / 60;
+        return minutes * _minute;
+    }
+
+
+    private int minute;
+
+    public MinRate(int minute_)
+    {
+        minute = minute_;
+    }
+
+    public int _minute
+    {
+        get { return minute; }
+        set { minute = value; }
+    }
+
+    public int count_minute(int seconds)
+    {
+        int minutes = seconds / 60;
+        return minutes * _minute;
+    }
+
+    public double count_minute(double seconds)
+    {
+        double minutes = seconds / 60;
+        return minutes * _minute;
+    }
+}
+
+
+namespace test1
+{
+    internal class Program
+    {
+        static void Main()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+
+            Console.Write("Введите название компании: ");
+            string name = Console.ReadLine();
+
+            Console.Write("Введите фио: ");
+            string fio = Console.ReadLine();
+
+            Console.Write("Введите номер телефона: ");
+            string phone_number = Console.ReadLine();
+
+            Console.Write("Введите баланс вашего счёта: ");
+            double balance =Convert.ToDouble(Console.ReadLine());
+
+            Console.Write("Введите тариф: ");
+            string name_rate = Console.ReadLine();
+
+            Console.Write("Введите секунды: ");
+            int sec = Convert.ToInt32(Console.ReadLine());
+
+            Console.Write("Введите минуты: ");
+            int min = Convert.ToInt32(Console.ReadLine());
+
+            Rate[] rate = new Rate [] { new SecRate(sec), new MinRate(min) };
+           
+            Company company = new Company(name);
+            Client client = new Client(fio, phone_number, balance);
+            
+            foreach(Rate r in rate)
+            {
+                int count = r.count(80);
+                Console.WriteLine($"Стоимость разговора продолжительностью 80: {count}");
+            }
+
+            Console.WriteLine(company._Ncompany);
+            Console.WriteLine(client._fio+" "+ client._phone+" "+client._balance);
+
+            Console.ReadKey();
+        }
+    }
+}
